@@ -54,7 +54,7 @@ int index=0;
 //initialize an instance of class NewKeypad
 Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
-void code_porte() {
+int code_porte() {
 	char customKey = customKeypad.getKey();
 
 	if (customKey) {
@@ -67,12 +67,16 @@ void code_porte() {
 			index=0;
 				
 			if(strcmp(digits,code)==0){
-				Open();
+				// Open();
+				return 1; // Code bon
 			} else {
-				Close()
+				// Close();
+				return 0; // Code faux
 			}
 		}
 	}
+
+	return 2; // code pas complet
 }
 
 void setup() {
@@ -89,7 +93,7 @@ void setup() {
 
 void loop() {
 	// Check code
-	code_porte();
+	int access = code_porte();
 	
 	// Look for new cards
 	if ( ! mfrc522.PICC_IsNewCardPresent()) {
@@ -113,10 +117,10 @@ void loop() {
 	Serial.println();
 	content.toUpperCase();
 	
-	if (content.substring(1) == "39 38 36 94") {
+	if (content.substring(1) == "39 38 36 94" || access == "1") {
 		Open();
 	}
-	else if (content.substring(1) != "39 38 36 94") {
+	else if (content.substring(1) != "39 38 36 94" || access = "0") {
 		Close();
 	}
 
