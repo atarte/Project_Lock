@@ -21,6 +21,8 @@ void Open() {
 	delay(3000);
 
 	// Open servo moteur
+	
+	digitalWrite(11, LOW);
 }
 
 void Close() {
@@ -29,6 +31,8 @@ void Close() {
 	delay(3000);
 
 	// Close servo moteur
+
+	digitalWrite(12, LOW);
 }
 
 // Code -----------------
@@ -54,8 +58,6 @@ int index=0;
 //initialize an instance of class NewKeypad
 Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
-int access = 2;
-
 void code_porte() {
 	char customKey = customKeypad.getKey();
 
@@ -69,19 +71,12 @@ void code_porte() {
 			index=0;
 				
 			if(strcmp(digits,code)==0){
-				// Open();
-				// return 1; // Code bon
-				access = 1;
+				Open();
 			} else {
-				// Close();
-				// return 0; // Code faux
-				access = 0;
+				Close();
 			}
 		}
 	}
-
-	// return 2; // code pas complet
-	access = 2;
 }
 
 void setup() {
@@ -122,13 +117,10 @@ void loop() {
 	Serial.println();
 	content.toUpperCase();
 	
-	if (content.substring(1) == "39 38 36 94" || access == 1) {
+	if (content.substring(1) == "39 38 36 94") {
 		Open();
 	}
-	else if (content.substring(1) != "39 38 36 94" || access == 0) {
+	else if (content.substring(1) != "39 38 36 94") {
 		Close();
 	}
-
-	digitalWrite(11, LOW);
-	digitalWrite(12, LOW);
 }
