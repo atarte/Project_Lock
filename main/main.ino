@@ -20,7 +20,7 @@ Servo myservo;	// Create Servo instance.
 void Open() {
   Serial.println("Authorized access");
   digitalWrite(11, HIGH);
-  myservo.write(0); // Open servo moteur
+  myservo.write(0);     // Open servo moteur
   delay(3000);
 
 
@@ -30,15 +30,15 @@ void Open() {
 void Close() {
   Serial.println("Access denied");
   digitalWrite(12, HIGH);   // turn the LED on (HIGH is the voltage level)
-  myservo.write(90); // Close servo moteur
+  myservo.write(90);    // Close servo moteur
   delay(3000);
 
   digitalWrite(12, LOW);
 }
 
 // Code -----------------
-const byte ROWS = 4; //four rows
-const byte COLS = 4; //four columns
+const byte ROWS = 4;    //four rows
+const byte COLS = 4;    //four columns
 
 //define the cymbols on the buttons of the keypads
 char hexaKeys[ROWS][COLS] = {
@@ -48,8 +48,8 @@ char hexaKeys[ROWS][COLS] = {
   {'*','0','#','D'}
 };
 
-byte rowPins[ROWS] = {29, 28, 27, 26}; //connect to the row pinouts of the keypad
-byte colPins[COLS] = {25, 24, 23, 22}; //connect to the column pinouts of the keypad
+byte rowPins[ROWS] = {29, 28, 27, 26};  //connect to the row pinouts of the keypad
+byte colPins[COLS] = {25, 24, 23, 22};  //connect to the column pinouts of the keypad
 
 char digits[DLENGTH];
 char code[]="071017A";
@@ -85,8 +85,8 @@ void setup() {
   SPI.begin();      // Initiate  SPI bus
   mfrc522.PCD_Init();   // Initiate MFRC522
 
-  myservo.attach(9); // Pin du Servo
-  myservo.write(90); // Initiat servomotor position
+  myservo.attach(9);    // Pin du Servo
+  myservo.write(90);    // Initiat servomotor position
 
   Serial.println("Approximate your card to the reader...");
   Serial.println();
