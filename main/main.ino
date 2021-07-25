@@ -3,9 +3,15 @@
 #include <MFRC522.h>
 #include <Keypad.h>
 
+#define LED_AUTHORIZED 11
+#define LED_DENIED 12
 #define SS_PIN 53
 #define RST_PIN 5
+#define PIN_SERVO 9
+#define OPEN_ANGLE 0
+#define CLOSE_ANGLE 90
 #define DLENGTH 7
+
 MFRC522 mfrc522(SS_PIN, RST_PIN);   // Create MFRC522 instance.
 Servo myservo;	// Create Servo instance.
 
@@ -28,94 +34,103 @@ byte rowPins[ROWS] = {29, 28, 27, 26};  //connect to the row pinouts of the keyp
 byte colPins[COLS] = {25, 24, 23, 22};  //connect to the column pinouts of the keypad
 
 char digits[DLENGTH];
-char closing_key[] = "C";
+char closing_key = 'C';
 int index = 0;
 
+// Open rotate the servo moteur to open the door
 void Open() {
   Serial.println("Opening door");
-  digitalWrite(11, HIGH);
-  myservo.write(0);
+
+  digitalWrite(LED_AUTHORIZED, HIGH);
+  myservo.write(OPEN_ANGLE);
   delay(3000);
-
-
-  digitalWrite(11, LOW);
+  digitalWrite(LED_AUTHORIZED, LOW);
 }
 
+// Close rotate the servo moteur to close the door
 void Close() {
   Serial.println("Closing door");
-  digitalWrite(12, HIGH);
-  myservo.write(90);
-  delay(2000);
 
-  digitalWrite(12, LOW);
+	index = 0; // Reset the key pad 
+
+  digitalWrite(LED_AUTHORIZED, HIGH); // Peut être mettre un clignotement de led a la place pour le différenté de Denied()
+  myservo.write(CLOSE_ANGLE);
+  delay(2000);
+  digitalWrite(LED_DENIED, LOW);
+}
+
+// Denied turn on a light to show the user that his access is denied
+void Denied() {
+	Serial.println("Access denied");
+
+	digitalWrite(LED_DENIED, HIGH);
+	delay(2000);
+	digitalWrite(LED_DENIED, LOW);
 }
 
 //initialize an instance of class NewKeypad
-Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
+Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
 void code_porte() {
   char customKey = customKeypad.getKey();
 
   if (customKey) {
     digits[index] = customKey;
-		Serial.print("Key press : ");
-		Serial.println(digits[index]);
+		// Serial.print("Key press : ");
+		// Serial.println(digits[index]);
 
 		// Closing with a button on the keypad
-		if (strcmp(digits[index], closing_key) == 0) {
+		if (digits[index] == closing_key) {
 			Close();
-
-			index = 0;
+			
 			return;
 		}
 
     index = index + 1;
 
     if (index == DLENGTH) {
-      //Serial.println(digits);
       index = 0;
 
       if (strcmp(digits,code) == 0) {
-			  Serial.println("Authorized access");
-
+			  Serial.println("Authorized access key pad");
+				
         Open();
       } else {
-				Serial.println("Access denied");
-				digitalWrite(12, HIGH);   // turn the LED on (HIGH is the voltage level)
-				delay(2000);
-
-				digitalWrite(12, LOW);
+				Denied();
       }
     }
   }
 }
 
+// INIT -------------------------------
 void setup() {
+  Serial.println("Initialisation of the system");
+
   Serial.begin(9600);   // Initiate a serial communication
   SPI.begin();      // Initiate  SPI bus
   mfrc522.PCD_Init();   // Initiate MFRC522
 
-  myservo.attach(9);    // Pin du Servo
-  myservo.write(0);    // Initiat servomotor position
+  myservo.attach(PIN_SERVO);    // Pin du Servo
+  myservo.write(OPEN_ANGLE);    // Initiat servomotor position
 
-  Serial.println("Approximate your card to the reader...");
-  Serial.println();
+  pinMode(LED_AUTHORIZED, OUTPUT);
+  pinMode(LED_DENIED, OUTPUT);
 
-  pinMode(11, OUTPUT);
-  pinMode(12, OUTPUT);
+  Serial.println("Done !");
 }
 
+// MAIN -------------------------------
 void loop() {
   // Check code
   code_porte();
 
   // Look for new cards
-  if ( ! mfrc522.PICC_IsNewCardPresent()) {
+  if (!mfrc522.PICC_IsNewCardPresent()) {
     return;
   }
 
   // Select one of the cards
-  if ( ! mfrc522.PICC_ReadCardSerial()) {
+  if (!mfrc522.PICC_ReadCardSerial()) {
     return;
   }
 
@@ -132,18 +147,13 @@ void loop() {
   content.toUpperCase();
 
   if (content.substring(1) == card) {
-	  Serial.println("Authorized access");
+	  Serial.println("Authorized access card");
 
     Open();
-
 		delay(7000);
 		Close();
   }
   else {
-		Serial.println("Access denied");
-		digitalWrite(12, HIGH);
-		delay(2000);
-
-		digitalWrite(12, LOW);
+		Denied();
   }
 }
