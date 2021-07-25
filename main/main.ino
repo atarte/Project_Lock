@@ -9,34 +9,10 @@
 MFRC522 mfrc522(SS_PIN, RST_PIN);   // Create MFRC522 instance.
 Servo myservo;	// Create Servo instance.
 
-// Function -------------
+// Code
+char card[] = "39 38 36 94";
+char code[] = "071017A";
 
-/*
-  Il faudra suremnent utiliser un "StateDoor"
-  Pour savoir dans quelle état et la porte et ne
-  pas trop tourner le servo moteur
-*/
-
-void Open() {
-  Serial.println("Authorized access");
-  digitalWrite(11, HIGH);
-  myservo.write(0);     // Open servo moteur
-  delay(3000);
-
-
-  digitalWrite(11, LOW);
-}
-
-void Close() {
-  Serial.println("Access denied");
-  digitalWrite(12, HIGH);   // turn the LED on (HIGH is the voltage level)
-  myservo.write(90);    // Close servo moteur
-  delay(3000);
-
-  digitalWrite(12, LOW);
-}
-
-// Code -----------------
 const byte ROWS = 4;    //four rows
 const byte COLS = 4;    //four columns
 
@@ -52,9 +28,27 @@ byte rowPins[ROWS] = {29, 28, 27, 26};  //connect to the row pinouts of the keyp
 byte colPins[COLS] = {25, 24, 23, 22};  //connect to the column pinouts of the keypad
 
 char digits[DLENGTH];
-char code[]="071017A";
+char closing_key[] = "C";
+int index = 0;
 
-int index=0;
+void Open() {
+  Serial.println("Opening door");
+  digitalWrite(11, HIGH);
+  myservo.write(0);
+  delay(3000);
+
+
+  digitalWrite(11, LOW);
+}
+
+void Close() {
+  Serial.println("Closing door");
+  digitalWrite(12, HIGH);
+  myservo.write(90);
+  delay(2000);
+
+  digitalWrite(12, LOW);
+}
 
 //initialize an instance of class NewKeypad
 Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
@@ -63,18 +57,34 @@ void code_porte() {
   char customKey = customKeypad.getKey();
 
   if (customKey) {
-    //Serial.println(customKey);
-    digits[index]=customKey;
-    index=index+1;
+    digits[index] = customKey;
+		Serial.print("Key press : ");
+		Serial.println(digits[index]);
 
-    if(index==DLENGTH){
+		// Closing with a button on the keypad
+		if (strcmp(digits[index], closing_key) == 0) {
+			Close();
+
+			index = 0;
+			return;
+		}
+
+    index = index + 1;
+
+    if (index == DLENGTH) {
       //Serial.println(digits);
-      index=0;
+      index = 0;
 
-      if(strcmp(digits,code)==0){
+      if (strcmp(digits,code) == 0) {
+			  Serial.println("Authorized access");
+
         Open();
       } else {
-        Close();
+				Serial.println("Access denied");
+				digitalWrite(12, HIGH);   // turn the LED on (HIGH is the voltage level)
+				delay(2000);
+
+				digitalWrite(12, LOW);
       }
     }
   }
@@ -86,7 +96,7 @@ void setup() {
   mfrc522.PCD_Init();   // Initiate MFRC522
 
   myservo.attach(9);    // Pin du Servo
-  myservo.write(90);    // Initiat servomotor position
+  myservo.write(0);    // Initiat servomotor position
 
   Serial.println("Approximate your card to the reader...");
   Serial.println();
@@ -121,10 +131,19 @@ void loop() {
   Serial.println();
   content.toUpperCase();
 
-  if (content.substring(1) == "39 38 36 94") {
+  if (content.substring(1) == card) {
+	  Serial.println("Authorized access");
+
     Open();
+
+		delay(7000);
+		Close();
   }
-  else if (content.substring(1) != "39 38 36 94") {
-    Close();
+  else {
+		Serial.println("Access denied");
+		digitalWrite(12, HIGH);
+		delay(2000);
+
+		digitalWrite(12, LOW);
   }
 }
