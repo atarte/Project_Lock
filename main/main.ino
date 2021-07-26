@@ -107,6 +107,34 @@ void code_porte() {
 	}
 }
 
+// Reset take a new code for the keypad
+void Reset() {
+	Serial.println("Take a new password")
+
+	int new_index = 0;
+
+	while (index != DLENGTH) {
+		char customKey = customKeypad.getKey();
+
+		if (customKey && customKey != 'C') {
+			code[new_index] = customKey;
+
+			Serial.print("New index : ");
+			Serial.println(new_index);
+
+			Serial.print("new char : ")
+			Serial.println(code)
+
+			new_index++;
+		}
+	}
+
+	new_index = 0;
+
+	Serial.print("new password : ")
+	Serial.println(code)
+}
+
 // INIT -------------------------------
 void setup() {
 	Serial.begin(9600);   // Initiate a serial communication
@@ -154,7 +182,7 @@ void loop() {
 	if (content.substring(1) == card) {
 		Serial.println("Authorized access card");
 
-		Open();
+		Reset();
 	}
 	else {
 		Denied();
