@@ -72,13 +72,6 @@ void Denied() {
 	digitalWrite(LED_DENIED, LOW);
 }
 
-void CheckPassword() {
-	Serial.print("current password : ");
-	Serial.println(digits);
-	Serial.print("current index : ");
-	Serial.println(index);	
-}
-
 //initialize an instance of class NewKeypad
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
@@ -90,8 +83,6 @@ void code_porte() {
 		Serial.print("Key press : ");
 		Serial.println(digits);
 
-		CheckPassword();
-
 		// Closing with a button on the keypad
 		if (digits[index] == closing_key) {
 			Close();
@@ -99,13 +90,11 @@ void code_porte() {
 			return;
 		}
 
-		CheckPassword();
-
-		index = index + 1;
+		index++;
 
 		if (index == DLENGTH) {
 			
-			// index = 0; // Reset the key pad 
+			index = 0; // Reset the key pad 
 
 			if (strcmp(digits,code) == 0) {
 				Serial.println("Authorized access key pad");
@@ -120,9 +109,9 @@ void code_porte() {
 
 // INIT -------------------------------
 void setup() {
+	Serial.begin(9600);   // Initiate a serial communication
 	Serial.println("Initialisation of the system");
 
-	Serial.begin(9600);   // Initiate a serial communication
 	SPI.begin();      // Initiate  SPI bus
 	mfrc522.PCD_Init();   // Initiate MFRC522
 
