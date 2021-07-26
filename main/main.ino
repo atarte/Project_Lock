@@ -41,6 +41,8 @@ int index = 0;
 void Open() {
   Serial.println("Opening door");
 
+  index = 0; // Reset the key pad 
+	
   digitalWrite(LED_AUTHORIZED, HIGH);
   myservo.write(OPEN_ANGLE);
   delay(3000);
