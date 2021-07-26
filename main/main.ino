@@ -49,14 +49,14 @@ void Open() {
 	digitalWrite(LED_AUTHORIZED, LOW);
 }
 
-// Blink when door close
+// Blink trun on and off the light
 void Blink() {
-  for (int i = 0; i < 3; i++) {
-    digitalWrite(LED_AUTHORIZED, HIGH);
-    delay(500);
-    digitalWrite(LED_AUTHORIZED, LOW);
-    delay(500);
-  }
+	for (int i = 0; i < 3; i++) {
+		digitalWrite(LED_AUTHORIZED, HIGH);
+		delay(500);
+		digitalWrite(LED_AUTHORIZED, LOW);
+		delay(500);
+	}
 }
 
 // Close rotate the servo moteur to close the door
@@ -65,7 +65,7 @@ void Close() {
 
 	index = 0; // Reset the key pad 
 
-  myservo.write(CLOSE_ANGLE);
+	myservo.write(CLOSE_ANGLE);
 	Blink();
 }
 
