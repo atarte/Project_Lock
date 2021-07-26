@@ -49,6 +49,7 @@ void Open() {
 	digitalWrite(LED_AUTHORIZED, LOW);
 }
 
+// Blink when door close
 void Blink() {
   for (int i = 0; i < 3; i++) {
     digitalWrite(LED_AUTHORIZED, HIGH);
