@@ -122,8 +122,8 @@ void Reset() {
 			Serial.print("New index : ");
 			Serial.println(new_index);
 
-			Serial.print("new char : ")
-			Serial.println(code)
+			Serial.print("new char : ");
+			Serial.println(code);
 
 			new_index++;
 		}
@@ -131,8 +131,8 @@ void Reset() {
 
 	new_index = 0;
 
-	Serial.print("new password : ")
-	Serial.println(code)
+	Serial.print("new password : ");
+	Serial.println(code);
 }
 
 // INIT -------------------------------
