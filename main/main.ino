@@ -49,19 +49,21 @@ void Open() {
 
 // Close rotate the servo moteur to close the door
 void Close() {
-  Serial.println("Closing door");
+	Serial.println("Closing door");
 
 	index = 0; // Reset the key pad 
 
-  digitalWrite(LED_AUTHORIZED, HIGH); // Peut être mettre un clignotement de led a la place pour le différenté de Denied()
-  myservo.write(CLOSE_ANGLE);
-  delay(2000);
-  digitalWrite(LED_DENIED, LOW);
+	digitalWrite(LED_AUTHORIZED, HIGH); // Peut être mettre un clignotement de led a la place pour le différenté de Denied()
+	myservo.write(CLOSE_ANGLE);
+	delay(2000);
+	digitalWrite(LED_AUTHORIZED, LOW);
 }
 
 // Denied turn on a light to show the user that his access is denied
 void Denied() {
 	Serial.println("Access denied");
+	
+	index = 0; // Reset the key pad 
 
 	digitalWrite(LED_DENIED, HIGH);
 	delay(2000);
@@ -89,7 +91,6 @@ void code_porte() {
     index = index + 1;
 
     if (index == DLENGTH) {
-      index = 0;
 
       if (strcmp(digits,code) == 0) {
 			  Serial.println("Authorized access key pad");
