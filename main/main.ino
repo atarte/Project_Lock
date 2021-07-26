@@ -24,10 +24,10 @@ const byte COLS = 4;    //four columns
 
 //define the cymbols on the buttons of the keypads
 char hexaKeys[ROWS][COLS] = {
-  {'1','2','3','A'},
-  {'4','5','6','B'},
-  {'7','8','9','C'},
-  {'*','0','#','D'}
+	{'1','2','3','A'},
+	{'4','5','6','B'},
+	{'7','8','9','C'},
+	{'*','0','#','D'}
 };
 
 byte rowPins[ROWS] = {29, 28, 27, 26};  //connect to the row pinouts of the keypad
@@ -39,16 +39,14 @@ int index = 0;
 
 // Open rotate the servo moteur to open the door
 void Open() {
-  Serial.println("Opening door");
+	Serial.println("Opening door");
 
-  index = 0; // Reset the key pad 
-  
-	
-  digitalWrite(LED_AUTHORIZED, HIGH);
-  myservo.write(OPEN_ANGLE);
-  delay(3000);
-  digitalWrite(LED_AUTHORIZED, LOW);
-  
+	index = 0; // Reset the key pad 
+
+	digitalWrite(LED_AUTHORIZED, HIGH);
+	myservo.write(OPEN_ANGLE);
+	delay(3000);
+	digitalWrite(LED_AUTHORIZED, LOW);
 }
 
 // Close rotate the servo moteur to close the door
@@ -57,18 +55,16 @@ void Close() {
 
 	index = 0; // Reset the key pad 
 
- 
 	digitalWrite(LED_AUTHORIZED, HIGH); // Peut être mettre un clignotement de led a la place pour le différenté de Denied()
 	myservo.write(CLOSE_ANGLE);
 	delay(2000);
 	digitalWrite(LED_AUTHORIZED, LOW);
-  
 }
 
 // Denied turn on a light to show the user that his access is denied
 void Denied() {
 	Serial.println("Access denied");
-	
+
 	index = 0; // Reset the key pad 
 
 	digitalWrite(LED_DENIED, HIGH);
@@ -80,89 +76,87 @@ void Denied() {
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
 void code_porte() {
-  char customKey = customKeypad.getKey();
+	char customKey = customKeypad.getKey();
 
-  if (customKey) {
-    digits[index] = customKey;
+	if (customKey) {
+		digits[index] = customKey;
 		Serial.print("Key press : ");
 		Serial.println(digits);
 
 		// Closing with a button on the keypad
 		if (digits[index] == closing_key) {
 			Close();
-			
+
 			return;
 		}
 
-    index = index + 1;
+		index = index + 1;
 
-    if (index == DLENGTH) {
+		if (index == DLENGTH) {
+			
+			if (strcmp(digits,code) == 0) {
+				Serial.println("Authorized access key pad");
 
-      index = 0;
-
-      if (strcmp(digits,code) == 0) {
-			  Serial.println("Authorized access key pad");
-				
-        Open();
-      } else {
+				Open();
+			} else {
 				Denied();
-      }
-    }
-  }
+			}
+		}
+	}
 }
 
 // INIT -------------------------------
 void setup() {
-  Serial.println("Initialisation of the system");
+	Serial.println("Initialisation of the system");
 
-  Serial.begin(9600);   // Initiate a serial communication
-  SPI.begin();      // Initiate  SPI bus
-  mfrc522.PCD_Init();   // Initiate MFRC522
+	Serial.begin(9600);   // Initiate a serial communication
+	SPI.begin();      // Initiate  SPI bus
+	mfrc522.PCD_Init();   // Initiate MFRC522
 
-  myservo.attach(PIN_SERVO);    // Pin du Servo
-  myservo.write(OPEN_ANGLE);    // Initiat servomotor position
+	myservo.attach(PIN_SERVO);    // Pin du Servo
+	myservo.write(OPEN_ANGLE);    // Initiat servomotor position
 
-  pinMode(LED_AUTHORIZED, OUTPUT);
-  pinMode(LED_DENIED, OUTPUT);
+	pinMode(LED_AUTHORIZED, OUTPUT);
+	pinMode(LED_DENIED, OUTPUT);
 
-  Serial.println("Done !");
+	Serial.println("Done !");
 }
 
 // MAIN -------------------------------
 void loop() {
-  // Check code
-  code_porte();
+	// Check code
+	code_porte();
 
-  // Look for new cards
-  if (!mfrc522.PICC_IsNewCardPresent()) {
-    return;
-  }
+	// Look for new cards
+	if (!mfrc522.PICC_IsNewCardPresent()) {
+		return;
+	}
 
-  // Select one of the cards
-  if (!mfrc522.PICC_ReadCardSerial()) {
-    return;
-  }
+	// Select one of the cards
+	if (!mfrc522.PICC_ReadCardSerial()) {
+		return;
+	}
 
-  // Card ID
-  String content= "";
-  byte letter;
+	// Card ID
+	String content= "";
+	byte letter;
 
-  for (byte i = 0; i < mfrc522.uid.size; i++) {
-    content.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
-    content.concat(String(mfrc522.uid.uidByte[i], HEX));
-  }
+	for (byte i = 0; i < mfrc522.uid.size; i++) {
+		content.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+		content.concat(String(mfrc522.uid.uidByte[i], HEX));
+	}
 
-  Serial.println();
-  content.toUpperCase();
+	Serial.println();
+	content.toUpperCase();
 
-  if (content.substring(1) == card) {
-	  Serial.println("Authorized access card");
+	if (content.substring(1) == card) {
+		Serial.println("Authorized access card");
 
-    Open();
-		//delay(7000);
-		//Close();
-  }
-  else {
+		Open();
+		delay(7000);
+		Close();
+	}
+	else {
 		Denied();
-  }
+	}
 }
