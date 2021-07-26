@@ -109,27 +109,22 @@ void code_porte() {
 
 // Reset take a new code for the keypad
 void Reset() {
-	Serial.println("Take a new password")
+	Serial.println("Take a new password");
 
-	int new_index = 0;
+	int i = 0;
 
-	while (index != DLENGTH) {
+	while (i != DLENGTH) {
 		char customKey = customKeypad.getKey();
 
-		if (customKey && customKey != 'C') {
-			code[new_index] = customKey;
+		if (customKey && customKey != closing_key) {
+			code[i] = customKey;
 
-			Serial.print("New index : ");
-			Serial.println(new_index);
-
-			Serial.print("new char : ");
+			Serial.print("new key press : ");
 			Serial.println(code);
 
-			new_index++;
+			i++;
 		}
 	}
-
-	new_index = 0;
 
 	Serial.print("new password : ");
 	Serial.println(code);
