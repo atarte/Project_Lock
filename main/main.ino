@@ -72,6 +72,13 @@ void Denied() {
 	digitalWrite(LED_DENIED, LOW);
 }
 
+void CheckPassword() {
+	Serial.print("current password : ");
+	Serial.println(digits);
+	Serial.print("current index : ");
+	Serial.println(index);	
+}
+
 //initialize an instance of class NewKeypad
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
@@ -83,6 +90,8 @@ void code_porte() {
 		Serial.print("Key press : ");
 		Serial.println(digits);
 
+		CheckPassword();
+
 		// Closing with a button on the keypad
 		if (digits[index] == closing_key) {
 			Close();
@@ -90,10 +99,14 @@ void code_porte() {
 			return;
 		}
 
+		CheckPassword();
+
 		index = index + 1;
 
 		if (index == DLENGTH) {
 			
+			// index = 0; // Reset the key pad 
+
 			if (strcmp(digits,code) == 0) {
 				Serial.println("Authorized access key pad");
 
@@ -153,8 +166,6 @@ void loop() {
 		Serial.println("Authorized access card");
 
 		Open();
-		delay(7000);
-		Close();
 	}
 	else {
 		Denied();
