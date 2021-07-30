@@ -1,6 +1,6 @@
 # Project_Lock
 
-![cover](https://github.com/atarte/Project_Lock/coffre.png)
+![cover](https://github.com/atarte/Project_Lock/blob/main/coffre.png)
 
 ### Participant : [C-atarina](https://github.com/C-atarina), [atarte](https://github.com/atarte)
 
