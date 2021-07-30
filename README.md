@@ -1,6 +1,6 @@
 # Project_Lock
 
-![cover](https://github.com/atarte/Project_Lock)
+![cover](https://github.com/atarte/Project_Lock/coffre.png)
 
 ### Participant : [C-atarina](https://github.com/C-atarina), [atarte](https://github.com/atarte)
 
@@ -10,7 +10,7 @@ For opening the gate, you need to enter the correct password on the keypad. But 
 
 You can also change the password in the code at line 20 and change the length of the password at line 13.
 
-And you can also change the RFID card to reset the password at line 19. 
+And you can also change the RFID card to reset the password at line 19.
 
 ## Code
 
